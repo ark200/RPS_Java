@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -85,6 +87,13 @@ public class signup extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private boolean isUsernameTaken(String username){
         DatabaseHelper dbHelper = new DatabaseHelper(signup.this);
         SQLiteDatabase db       = dbHelper.getReadableDatabase();

@@ -38,7 +38,7 @@
                         android:layout_margin="20dp"
                         android:padding="10dp"
                         android:text="Game Result"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -81,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"
                         android:text="User Score: 0"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
 
                     <TextView
@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="20dp"
                         android:text="Opponent Score: 0"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
 
                 </LinearLayout>

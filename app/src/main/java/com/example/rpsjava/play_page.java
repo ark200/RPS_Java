@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 public class play_page extends AppCompatActivity {
 
@@ -67,30 +73,55 @@ public class play_page extends AppCompatActivity {
         oppscoretv.setText("OPPONENT SCORE: "+oppscore);
 
         if(myscore>= gameUtils.getWinning_score() || oppscore>=gameUtils.getWinning_score()){
-            GameLog gameLog = new GameLog(System.currentTimeMillis(),gameUtils.getGameResult(),myscore,oppscore);
-            SQLiteDatabase db = databaseHelper2.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper2.COL_DATE,gameLog.getDate());
-            values.put(DatabaseHelper2.COL_RESULT,gameLog.getResult());
-            values.put(DatabaseHelper2.COL_MY_SCORE,gameLog.getMyScore());
-            values.put(DatabaseHelper2.COL_OPP_SCORE,gameLog.getOppScore());
-            db.insert(DatabaseHelper2.TABLE_NAME,null,values);
-            db.close();
-            endGame(myscore, oppscore);
+            if(myscore == gameUtils.getWinning_score()){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String currentDate   = sdf.format(new Date());
+                DatabaseHelper2 dbHelper = new DatabaseHelper2(play_page.this);
+                SQLiteDatabase db        = dbHelper.getReadableDatabase();
 
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DatabaseHelper2.COL_DATE,currentDate);
+                contentValues.put(DatabaseHelper2.COL_OPP_SCORE,oppscore);
+                contentValues.put(DatabaseHelper2.COL_MY_SCORE,myscore);
+                contentValues.put(DatabaseHelper2.COL_RESULT,"WON");
+                long status = db.insert(DatabaseHelper2.TABLE_NAME, null, contentValues);
+                if(status != -1){
+                    Toast.makeText(play_page.this,"RECORD SAVED",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(play_page.this,"RECORD NOT SAVED",Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(play_page.this,"CONGRATS, YOU WON!",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(play_page.this,homepage.class);
+                startActivity(intent);
+                finish();
+            }else if(oppscore == gameUtils.getWinning_score()){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String currentDate   = sdf.format(new Date());
+                DatabaseHelper2 dbHelper = new DatabaseHelper2(play_page.this);
+                SQLiteDatabase db        = dbHelper.getReadableDatabase();
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DatabaseHelper2.COL_DATE,currentDate);
+                contentValues.put(DatabaseHelper2.COL_OPP_SCORE,oppscore);
+                contentValues.put(DatabaseHelper2.COL_MY_SCORE,myscore);
+                contentValues.put(DatabaseHelper2.COL_RESULT,"LOST");
+                long status = db.insert(DatabaseHelper2.TABLE_NAME, null, contentValues);
+                if(status != -1){
+                    Toast.makeText(play_page.this,"RECORD SAVED",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(play_page.this,"RECORD NOT SAVED",Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(play_page.this,"OPPONENT WON!",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(play_page.this,homepage.class);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
-    private void endGame(int myScore, int oppScore){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("GAME OVER");
-        builder.setMessage("MY SCORE: "+ myScore + "\nOPPONENT SCORE: "+oppScore);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                databaseHelper2.addGameLog(System.currentTimeMillis(), gameUtils.getGameResult(),myScore,oppScore);
-                finish();
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
